@@ -6,9 +6,6 @@ ARG ONNXRUNTIME_REPO_ID="Microsoft/onnxruntime"
 # Add piwheels support (pre-compiled binary Python packages for RPi)
 COPY files/pip.conf /etc
 
-# Enforces cross-compilation through Qemu.
-RUN [ "cross-build-start" ]
-
 RUN install_packages \
     sudo \
     build-essential \
@@ -62,5 +59,3 @@ RUN ./build.sh \
     --update \
     --parallel \
     --build --build_shared_lib --build_wheel
-
-RUN [ "cross-build-end" ]
