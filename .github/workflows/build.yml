@@ -1,4 +1,4 @@
-name: Build onnxruntime, Upload Artifacts
+name: Build
 
 on:
   # Run when the image builder changes
@@ -10,22 +10,32 @@ on:
     - cron:  '0 0 * * *'
 
 jobs:
-  build-ort-upload-artifacts:
+  build:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2.2.0
 
+      - uses: docker/setup-buildx-action@v1
+        with:
+          install: true
+
+      - uses: docker/setup-qemu-action@v1
+
       - name: Build Docker image
         run: |
-          docker build -t ort-builder .
+          docker build \
+            -t builder:latest \
+            --output=type=docker \
+            --platform=linux/arm/v7 \
+            .
 
       - name: Instantiate Docker image
         run: |
-          docker create -ti --name ort-builder-tmp ort-builder bash
+          docker create -ti --name builder-tmp builder bash
 
       - name: Extract build files from Docker instance
         run: |
-          docker cp ort-builder-tmp:/code/onnxruntime/build .
+          docker cp builder-tmp:/code/onnxruntime/build .
 
       - name: Upload build files
         uses: actions/upload-artifact@v2

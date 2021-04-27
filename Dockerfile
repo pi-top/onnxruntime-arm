@@ -1,5 +1,5 @@
 # Adapted from https://github.com/microsoft/onnxruntime/blob/master/dockerfiles/Dockerfile.arm32v7
-FROM balenalib/raspberrypi3-python:latest-stretch-build
+FROM balenalib/rpi-raspbian:buster
 
 ARG ONNXRUNTIME_REPO_ID="Microsoft/onnxruntime"
 
