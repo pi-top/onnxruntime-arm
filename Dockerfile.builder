@@ -1,5 +1,5 @@
 # Adapted from https://github.com/microsoft/onnxruntime/blob/master/dockerfiles/Dockerfile.arm32v7
-FROM balenalib/raspberrypi3-python:3.7-stretch-build
+FROM balenalib/raspberrypi3-python:3.7-buster
 
 # Enforces cross-compilation through Qemu.
 RUN [ "cross-build-start" ]
