@@ -30,21 +30,3 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           path: ${{ github.workspace }}/build/Linux/MinSizeRel/dist/*.whl
-
-      - name: Convert to .deb
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y python3-apt apt-file dpkg-dev fakeroot build-essential devscripts debhelper
-          sudo apt-file update
-
-          python3 -m pip install wheel2deb
-
-          cd ${{ github.workspace }}/build/Linux/MinSizeRel/dist/
-
-          wheel2deb --map attrs=attr
-
-          wheel2deb build
-
-      - uses: actions/upload-artifact@v2
-        with:
-          path: ${{ github.workspace }}/build/Linux/MinSizeRel/dist/output/*
