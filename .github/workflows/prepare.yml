@@ -1,10 +1,7 @@
 name: Prepare Docker image for building onnxruntime
 
 on:
-  # Run when the image builder changes
-  push:
-    branches:
-      - master
+  workflow_dispatch:
 
 jobs:
   create-builder:
