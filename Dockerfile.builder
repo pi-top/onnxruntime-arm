@@ -18,7 +18,8 @@ RUN install_packages \
     python3-dev \
     git \
     tar \
-    libatlas-base-dev
+    libatlas-base-dev \
+    devscripts
 
 # Carefully install the latest version of pip
 WORKDIR /pip
@@ -26,7 +27,8 @@ RUN wget https://bootstrap.pypa.io/get-pip.py
 RUN python3 get-pip.py
 RUN pip3 install --upgrade setuptools
 RUN pip3 install --upgrade wheel
-RUN pip3 install numpy==1.16.2
+# Install numpy version that is available on Buster
+RUN pip3 install numpy==$(rmadison -a armhf -s buster python3-numpy | awk '{print $3}' | cut -d ":" -f2 | cut -d "-" -f1)
 RUN pip3 install flake8
 
 # Build the latest cmake
