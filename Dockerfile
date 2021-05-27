@@ -1,29 +1,6 @@
-FROM pitop/onnxruntime-builder:latest
+FROM pitop/onnxruntime-builder-buster:latest
 
 RUN [ "cross-build-start" ]
-
-# Install python3.7
-RUN install_packages \
-	build-essential \
-	zlib1g-dev \
-	libncurses5-dev \
-	libgdbm-dev \
-	libnss3-dev \
-	libssl-dev \
-	libreadline-dev \
-	libffi-dev \
-	wget
-
-RUN cd /tmp \
-	&& curl -O https://www.python.org/ftp/python/3.7.3/Python-3.7.3.tar.xz \
-	&& tar -xf Python-3.7.3.tar.xz \
-	&& cd Python-3.7.3 \
-	&& ./configure --enable-optimizations \
-	&& make -j$(nproc) \
-	&& make altinstall
-
-RUN python3.7 --version
-
 
 # Prepare onnxruntime Repo
 WORKDIR /
