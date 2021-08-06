@@ -15,10 +15,13 @@ jobs:
 
       - name: Build onnxruntime
         run: |
+          docker run --privileged --rm tonistiigi/binfmt --install all
+
           docker create \
             --name builder \
             --volume ${{ github.workspace }}:${{ github.workspace }} \
             --workdir=${{ github.workspace }} \
+            --platform=linux/arm/v7 \
             debian:bullseye sleep inf
 
           docker start builder
