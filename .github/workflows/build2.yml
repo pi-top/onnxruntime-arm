@@ -13,18 +13,21 @@ jobs:
           ref: v1.8.1
           submodules: recursive
 
-      - name: Build
+      - name: Build onnxruntime
         run: |
           docker create \
             --name builder \
             --volume ${{ github.workspace }}:${{ github.workspace }} \
             --workdir=${{ github.workspace }} \
             --tty \
-            --platform=linux/arm/v7 debian:bullseye sleep inf
+            --platform=linux/arm/v7 \
+            debian:bullseye sleep inf
           docker start builder
 
+          docker exec builder env
           docker exec builder apt-get update
-          docker exec builder apt-get install -y sudo \
+          docker exec builder apt-get install -y \
+            sudo \
             build-essential \
             cmake \
             curl \
