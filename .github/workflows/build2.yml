@@ -1,0 +1,78 @@
+name: Build onnxruntime, Upload Artifacts
+
+on:
+  push:
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2.3.4
+        with:
+          repository: microsoft/onnxruntime
+          ref: v1.8.1
+          submodules: recursive
+
+      - name: Build
+        run: |
+          docker create \
+            --name builder \
+            --volume ${{ github.workspace }}:${{ github.workspace }} \
+            --workdir=${{ github.workspace }} \
+            --tty \
+            --platform=linux/arm/v7 debian:bullseye sleep inf
+          docker start builder
+
+          docker exec builder apt-get update
+          docker exec builder apt-get install -y sudo \
+            build-essential \
+            cmake \
+            curl \
+            libcurl4-openssl-dev \
+            libssl-dev \
+            wget \
+            python3 \
+            python3-pip \
+            python3-dev \
+            git \
+            tar
+          
+          docker exec --workdir ${{ github.workspace }}/cmake/external/json builder git checkout v3.9.1
+
+          docker exec builder pip3 install --upgrade pip
+          docker exec builder pip3 install --upgrade setuptools
+          docker exec builder pip3 install --upgrade wheel
+          docker exec builder pip3 install numpy
+
+          docker exec builder ${{ github.workspace }}/build.sh \
+            --config MinSizeRel \
+            --arm \
+            --skip_submodule_sync \
+            --parallel \
+            --build \
+            --build_shared_lib \
+            --enable_pybind \
+            --build_wheel
+
+      - uses: actions/upload-artifact@v2
+        with:
+          path: ${{ github.workspace }}/build/Linux/MinSizeRel/*.so
+
+      - uses: actions/upload-artifact@v2
+        with:
+          path: ${{ github.workspace }}/build/Linux/MinSizeRel/dist/*.whl
+
+      - name: Convert to .deb
+        run: |
+          sudo apt update
+          sudo apt install python3-apt apt-file dpkg-dev fakeroot build-essential devscripts debhelper python3-pip -y
+          sudo apt-file update
+          pip3 install wheel2deb
+          cd ${{ github.workspace }}/build/Linux/MinSizeRel/dist/
+          wheel2deb \
+            --map attrs=attr
+          wheel2deb build
+
+      - uses: actions/upload-artifact@v2
+        with:
+          path: ${{ github.workspace }}/build/Linux/MinSizeRel/dist/output/*
