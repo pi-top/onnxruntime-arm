@@ -19,8 +19,8 @@ jobs:
             --name builder \
             --volume ${{ github.workspace }}:${{ github.workspace }} \
             --workdir=${{ github.workspace }} \
-            --platform=linux/arm/v7 \
             debian:bullseye sleep inf
+
           docker start builder
 
           docker exec builder env
