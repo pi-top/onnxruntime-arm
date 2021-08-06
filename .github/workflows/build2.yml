@@ -19,7 +19,6 @@ jobs:
             --name builder \
             --volume ${{ github.workspace }}:${{ github.workspace }} \
             --workdir=${{ github.workspace }} \
-            --tty \
             --platform=linux/arm/v7 \
             debian:bullseye sleep inf
           docker start builder
@@ -40,14 +39,14 @@ jobs:
             git \
             tar
           
-          docker exec --workdir ${{ github.workspace }}/cmake/external/json builder git checkout v3.9.1
+          docker exec --workdir ${{ github.workspace }}/onnxruntime/cmake/external/json builder git checkout v3.9.1
 
           docker exec builder pip3 install --upgrade pip
           docker exec builder pip3 install --upgrade setuptools
           docker exec builder pip3 install --upgrade wheel
           docker exec builder pip3 install numpy
 
-          docker exec builder ${{ github.workspace }}/build.sh \
+          docker exec --workdir ${{ github.workspace }}/onnxruntime builder build.sh \
             --config MinSizeRel \
             --arm \
             --skip_submodule_sync \
